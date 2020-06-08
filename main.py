@@ -1,13 +1,14 @@
 import yfinance as yf
 from datetime import datetime
 from datetime import timedelta
+# noinspection PyUnresolvedReferences
 import pandas as pd
 import matplotlib.pyplot as plt
 
 date = str(datetime.today().strftime('%Y-%m-%d'))
 
 ticker = input("Enter a ticker:")
-period = input("Enter a custom period, or type 'week', 'month', 'year' or 'max'")
+period = input("Enter a custom period, or type 'latest', 'week', 'month', 'year' or 'max'")
 
 def calculate_time(delta):
     today = datetime.today()
@@ -17,7 +18,12 @@ def calculate_time(delta):
 
 
 def get_stonks(period_choice):
-    if period_choice == "week":
+    if period_choice == "latest":
+        start = "latest"
+        end = "N/A"
+        plot_data(ticker, start, end)
+
+    elif period_choice == "week":
         delta = timedelta(days=7)
         start, end = calculate_time(delta)
         plot_data(ticker, start, end)
@@ -36,6 +42,8 @@ def get_stonks(period_choice):
         start = "max"
         end = "N/A"
         plot_data(ticker, start, end)
+    else:
+        raise Exception("Not a valid time period.")
 
 
 def plot_data(ticker_name, starting_time, ending_time):
@@ -44,6 +52,9 @@ def plot_data(ticker_name, starting_time, ending_time):
     # Df means Pd Dataframe.
     if starting_time == "max":
         ticker_df = ticker_data.history(period="max")
+    elif starting_time == "latest":
+        ticker_df = ticker_data.history(period="1d",interval="5m")
+        print(ticker_df)
     else:
         ticker_df = ticker_data.history(start=starting_time, end=ending_time)
 
